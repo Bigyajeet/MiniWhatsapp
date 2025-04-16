@@ -44,20 +44,18 @@ res.render("new.ejs");
 
 //index route
 app.get("/chats",async(req,res)=>{
-    try{
+
         let chats=await Chat.find();
         console.log(chats);
         res.render("index.ejs",{chats});
     }
-    catch(err){
-        next(err);
-    }
+    
 
     
-});
+);
 //create route
-app.post("/chats",(req,res)=>{
-    try{
+app.post("/chats",asyncWrap(async(req,res)=>{
+    
     let{from,to,msg}=req.body;
     let newChat=new Chat({
         from:from,
@@ -65,7 +63,7 @@ app.post("/chats",(req,res)=>{
         msg:msg,
         created_at:new Date(),
     });
-    newChat.save().then((res)=>{
+   await newChat.save().then((res)=>{
         console.log("chat was saved")
         })
         .catch(err=>{
@@ -73,48 +71,49 @@ app.post("/chats",(req,res)=>{
      
         
         });
-    }catch(err){
-        next(err);
-    }
+    
 
     // console.log(newChat);
     // res.send("working");
     res.redirect("/chats");
-});
+}));
+//using wrapAync
+function asyncWrap(fn){
+    return function(req,res,next){
+     fn(req,res,next).catch(err);
+    }
+}
 
 //New-show route
-app.get("/chats/:id",async(req,res,next)=>{
-    try{
+app.get("/chats/:id",asyncWrap(async(req,res,next)=>{
+    
         let {id}=req.params;
         let chat=await Chat.findById(id);
         if(!chat){
             next(new ExpressError(500,"error Occurred"));
         }
         res.render("edit.js",{chat});
-    }catch(err){
-        next(err);
     }
+
     
-});
+));
 
 //edit route
-app.get("/chats/:id/edit",async(req,res)=>{
-    try{
+app.get("/chats/:id/edit",asyncWrap(async(req,res)=>{
+    
         let{id}=req.params;
         let chat= await Chat.findById(id);
         res.render("edit.ejs",{chat});
 
-    }catch(err){
-        next(err);
-
     }
+        
    
-})
+));
 
 //update route
 
-app.put("/chats/:id",async(req,res)=>{
-    try{
+app.put("/chats/:id",asyncWrap(async(req,res)=>{
+    
         let {id}=req.params;
         let {msg:newMsg}=req.body;
         console.log(newMsg);
@@ -124,25 +123,19 @@ app.put("/chats/:id",async(req,res)=>{
         );
         console.log(updatedChat);
         res.redirect("/chats");
-    }catch(err){
-        next(err);
     }
     
-});
+));
 
 //destroy route
-app.delete("/chats/:id",async(req,res)=>{
-    try{
+app.delete("/chats/:id",asyncWrap(async(req,res)=>{
         let {id}=req.params;
     let deletedChat=await Chat.findByIdAndDelete(id);
     console.log(deletedChat);
     res.redirect("/chats");
 
-    }catch(err){
-        next(err);
     }
-    
-});
+    ));
 
 app.get("/",(req,res)=>{
     res.send("root is starting");
