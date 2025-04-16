@@ -141,11 +141,25 @@ app.get("/",(req,res)=>{
     res.send("root is starting");
 });
 
+const handleValidationError=(err)=>{
+    console.log("this was a validation error.Please follow rules");
+    console.dir(err);
+    return err;
+}
+
+app.use((err,req,res,next)=>{
+    console.log(err.name);
+    if(err.name==="ValidationError"){
+        handleValidationError(err)
+    }
+       
+    next(err);
+});
 //error handler middleware
 app.use((err,req,res,next)=>{
 let {status=500,message="error occured"}=err;
 res.status(status).send(message);
-next();
+
 });
 
 
