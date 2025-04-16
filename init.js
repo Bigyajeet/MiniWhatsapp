@@ -1,6 +1,7 @@
 //sample data is created
 const mongoose = require('mongoose');
 const Chat=require("./models/chat.js");
+const ExpressError=require("./ExpressError")
 
 
 
@@ -9,7 +10,7 @@ main().then(()=>{
 }).catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/whatsapp');
+  await mongoose.connect('mongodb://127.0.0.1:27017/fakewhatsapp');
 
   // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
@@ -25,14 +26,14 @@ let allchats=[
 {
     from:"SWORUP",
     to:"bigya",
-    msg:"kama achi bhai",
+    msg:"thala is best",
     created_at:new Date(),//utc
 
 },
 {
     from:"swasti",
     to:"bigya",
-    msg:"kali sakale tike asibu ta",
+    msg:"hey whatsup",
     created_at:new Date(),//utc
 
 },
